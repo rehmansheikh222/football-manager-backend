@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { TeamService } from '../services/team.service';
 import { AuthRequest } from '../middleware/auth.middleware';
-import { TeamStatusResponse } from '../types';
+import { TeamStatusResponse, ErrorResponse } from '../types';
 
 export class TeamController {
   private teamService: TeamService;
@@ -36,7 +36,11 @@ export class TeamController {
     const team = await this.teamService.getTeamByUserId(userId);
     
     if (!team) {
-      res.status(404).json({ error: 'Team not found' });
+      const errorResponse: ErrorResponse = {
+        success: false,
+        error: 'Team not found',
+      };
+      res.status(404).json(errorResponse);
       return;
     }
 

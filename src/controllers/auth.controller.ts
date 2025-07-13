@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import { AuthService } from '../services/auth.service';
 import { BackgroundJobService } from '../services/backgroundJob.service';
 import { LoginRequest, AuthResponse, CustomError } from '../types';
+import { formatValidationErrors } from '../utils/validation';
 import prisma from '../config/database';
 
 export class AuthController {
@@ -17,7 +18,8 @@ export class AuthController {
   async login(req: Request, res: Response): Promise<void> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
+      const errorResponse = formatValidationErrors(errors.array());
+      res.status(400).json(errorResponse);
       return;
     }
 

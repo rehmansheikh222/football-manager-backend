@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import { TransferService } from '../services/transfer.service';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { TransferFilter, Position, PlayerWithTeam, PurchaseResponse } from '../types';
+import { formatValidationErrors } from '../utils/validation';
 
 export class TransferController {
   private transferService: TransferService;
@@ -29,7 +30,8 @@ export class TransferController {
   async addPlayerToTransferList(req: AuthRequest, res: Response): Promise<void> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
+      const errorResponse = formatValidationErrors(errors.array());
+      res.status(400).json(errorResponse);
       return;
     }
 
@@ -48,7 +50,8 @@ export class TransferController {
   async removePlayerFromTransferList(req: AuthRequest, res: Response): Promise<void> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
+      const errorResponse = formatValidationErrors(errors.array());
+      res.status(400).json(errorResponse);
       return;
     }
 
@@ -66,7 +69,8 @@ export class TransferController {
   async buyPlayer(req: AuthRequest, res: Response): Promise<void> {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
+      const errorResponse = formatValidationErrors(errors.array());
+      res.status(400).json(errorResponse);
       return;
     }
 

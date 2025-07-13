@@ -80,6 +80,10 @@ export interface ErrorResponse {
   stack?: string;
 }
 
+export interface ValidationErrorResponse extends ErrorResponse {
+  details?: ValidationError[];
+}
+
 // API Response types
 export interface ApiResponse<T = any> {
   success: boolean;
