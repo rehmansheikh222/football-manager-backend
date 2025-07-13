@@ -33,7 +33,7 @@ export class AuthController {
     
     // If new user, add team creation job
     if (isNewUser) {
-      const teamName = `${email.split('@')[0]}'s Team`;
+      const teamName = `${email}'s Team`;
       await this.backgroundJobService.addTeamCreationJob(authResponse.user.id, teamName);
     }
 
