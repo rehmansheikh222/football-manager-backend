@@ -27,11 +27,7 @@ export class TransferService {
     }
 
     // Check if team would have less than 15 players
-    const teamPlayersCount = await prisma.player.count({
-      where: { teamId: player.teamId },
-    });
-
-    if (teamPlayersCount <= 15) {
+    if (player.team.playersCount <= 15) {
       const error: CustomError = new Error('Cannot add player to transfer list. Team must have at least 15 players');
       error.statusCode = 400;
       throw error;
@@ -117,9 +113,6 @@ export class TransferService {
         // Get buyer's team
         const buyerTeam = await tx.team.findUnique({
           where: { ownerId: buyerUserId },
-          include: {
-            players: true,
-          },
         });
 
         if (!buyerTeam) {
@@ -129,7 +122,7 @@ export class TransferService {
         }
 
         // Check if buyer's team has 25 or more players
-        if (buyerTeam.players.length >= 25) {
+        if (buyerTeam.playersCount >= 25) {
           const error: CustomError = new Error('Cannot buy player. Team cannot have more than 25 players');
           error.statusCode = 400;
           throw error;
