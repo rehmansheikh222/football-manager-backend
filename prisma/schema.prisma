@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  team     Team?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("users")
+}
+
+model Team {
+  id           Int      @id @default(autoincrement())
+  ownerId      Int      @unique
+  teamName     String   @unique
+  budget       Int      @default(5000000)
+  playersCount Int      @default(0)
+  
+  owner   User     @relation(fields: [ownerId], references: [id])
+  players Player[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("teams")
+}
+
+enum Position {
+  GOALKEEPER
+  DEFENDER
+  MIDFIELDER
+  ATTACKER
+}
+
+model Player {
+  id          Int      @id @default(autoincrement())
+  teamId      Int
+  name        String
+  askingPrice Int?
+  position    Position
+  
+  team Team @relation(fields: [teamId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("players")
+} 
