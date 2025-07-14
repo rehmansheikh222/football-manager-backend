@@ -9,6 +9,7 @@ const transferController = new TransferController();
 
 // Get transfer market with filters
 router.get('/market', 
+  authMiddleware,
   asyncHandler(transferController.getTransferMarket.bind(transferController))
 );
 

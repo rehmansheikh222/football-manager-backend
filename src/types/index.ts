@@ -50,6 +50,7 @@ export interface TransferFilter {
   position?: Position;
   minPrice?: number;
   maxPrice?: number;
+  userId?: number; // To exclude players from current user's team
 }
 
 export interface Job {

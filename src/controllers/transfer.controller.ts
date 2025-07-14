@@ -12,8 +12,9 @@ export class TransferController {
     this.transferService = new TransferService();
   }
 
-  async getTransferMarket(req: Request, res: Response): Promise<void> {
+  async getTransferMarket(req: AuthRequest, res: Response): Promise<void> {
     const { teamName, playerName, position, minPrice, maxPrice } = req.query;
+    const userId = req.user!.userId;
     
     const filters: TransferFilter = {
       teamName: teamName as string,
@@ -21,6 +22,7 @@ export class TransferController {
       position: position as Position,
       minPrice: minPrice ? parseInt(minPrice as string) : undefined,
       maxPrice: maxPrice ? parseInt(maxPrice as string) : undefined,
+      userId: userId, // Exclude players from current user's team
     };
 
     const players: PlayerWithTeam[] = await this.transferService.getTransferMarket(filters);

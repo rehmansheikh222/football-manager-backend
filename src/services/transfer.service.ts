@@ -206,6 +206,15 @@ export class TransferService {
       };
     }
 
+    // Exclude players from current user's team if userId is provided
+    if (filters.userId) {
+      where.team = {
+        ownerId: {
+          not: filters.userId,
+        },
+      };
+    }
+
     const players = await prisma.player.findMany({
       where,
       include: {
