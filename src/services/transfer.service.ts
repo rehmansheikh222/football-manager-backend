@@ -26,9 +26,20 @@ export class TransferService {
       throw error;
     }
 
-    // Check if team would have less than 15 players
-    if (player.team.playersCount <= 15) {
-      const error: CustomError = new Error('Cannot add player to transfer list. Team must have at least 15 players');
+    // Count players already in transfer market from this team
+    const playersInTransferMarket = await prisma.player.count({
+      where: {
+        teamId: player.teamId,
+        askingPrice: {
+          not: null,
+        },
+      },
+    });
+
+    // Check if team would have less than 15 players after accounting for transfer market players
+    const effectivePlayerCount = player.team.playersCount - playersInTransferMarket;
+    if (effectivePlayerCount <= 15) {
+      const error: CustomError = new Error('Cannot add player to transfer list. Team must have at least 15 players after accounting for players already in transfer market');
       error.statusCode = 400;
       throw error;
     }
