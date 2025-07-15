@@ -12,7 +12,7 @@ export class AuthController {
 
   constructor() {
     this.authService = new AuthService();
-    this.backgroundJobService = new BackgroundJobService();
+    this.backgroundJobService = BackgroundJobService.getInstance();
   }
 
   async login(req: Request, res: Response): Promise<void> {

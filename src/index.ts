@@ -31,7 +31,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 // Start background job service
-const backgroundJobService = new BackgroundJobService();
+const backgroundJobService = BackgroundJobService.getInstance();
 backgroundJobService.start();
 
 // Start server

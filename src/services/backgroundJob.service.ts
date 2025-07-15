@@ -5,12 +5,23 @@ import { Job } from '../types';
 export class BackgroundJobService {
   private jobQueue: JobQueue;
   private teamService: TeamService;
+  private isProcessing: boolean = false;
   private intervalId: NodeJS.Timeout | null = null;
-  private isProcessing = false;
 
-  constructor() {
+  // Singleton instance
+  private static instance: BackgroundJobService;
+
+  private constructor() {
     this.jobQueue = new JobQueue();
     this.teamService = new TeamService();
+  }
+
+  // Get singleton instance
+  public static getInstance(): BackgroundJobService {
+    if (!BackgroundJobService.instance) {
+      BackgroundJobService.instance = new BackgroundJobService();
+    }
+    return BackgroundJobService.instance;
   }
 
   start() {
