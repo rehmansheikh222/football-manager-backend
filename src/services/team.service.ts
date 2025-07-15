@@ -1,67 +1,70 @@
 import prisma from '../config/database';
 import { Position } from '../types';
+import { Prisma } from '@prisma/client';
 
 export class TeamService {
   async createTeam(userId: number, teamName: string) {
     try {
-      // Create team
-      const team = await prisma.team.create({
-        data: {
-          ownerId: userId,
-          teamName,
-          budget: 5000000,
-          playersCount: 20,
-        },
+      return await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        // Create team
+        const team = await tx.team.create({
+          data: {
+            ownerId: userId,
+            teamName,
+            budget: 5000000,
+            playersCount: 20,
+          },
+        });
+
+        // Generate player names
+        const playerNames = this.generatePlayerNames();
+
+        // Create players
+        const players = await Promise.all([
+          // 3 Goalkeepers
+          ...Array.from({ length: 3 }, (_, i) => 
+            tx.player.create({
+              data: {
+                teamId: team.id,
+                name: playerNames.goalkeepers[i],
+                position: Position.GOALKEEPER,
+              },
+            })
+          ),
+          // 6 Defenders
+          ...Array.from({ length: 6 }, (_, i) => 
+            tx.player.create({
+              data: {
+                teamId: team.id,
+                name: playerNames.defenders[i],
+                position: Position.DEFENDER,
+              },
+            })
+          ),
+          // 6 Midfielders
+          ...Array.from({ length: 6 }, (_, i) => 
+            tx.player.create({
+              data: {
+                teamId: team.id,
+                name: playerNames.midfielders[i],
+                position: Position.MIDFIELDER,
+              },
+            })
+          ),
+          // 5 Attackers
+          ...Array.from({ length: 5 }, (_, i) => 
+            tx.player.create({
+              data: {
+                teamId: team.id,
+                name: playerNames.attackers[i],
+                position: Position.ATTACKER,
+              },
+            })
+          ),
+        ]);
+
+        return { team, players };
       });
-
-      // Generate player names
-      const playerNames = this.generatePlayerNames();
-
-      // Create players
-      const players = await Promise.all([
-        // 3 Goalkeepers
-        ...Array.from({ length: 3 }, (_, i) => 
-          prisma.player.create({
-            data: {
-              teamId: team.id,
-              name: playerNames.goalkeepers[i],
-              position: Position.GOALKEEPER,
-            },
-          })
-        ),
-        // 6 Defenders
-        ...Array.from({ length: 6 }, (_, i) => 
-          prisma.player.create({
-            data: {
-              teamId: team.id,
-              name: playerNames.defenders[i],
-              position: Position.DEFENDER,
-            },
-          })
-        ),
-        // 6 Midfielders
-        ...Array.from({ length: 6 }, (_, i) => 
-          prisma.player.create({
-            data: {
-              teamId: team.id,
-              name: playerNames.midfielders[i],
-              position: Position.MIDFIELDER,
-            },
-          })
-        ),
-        // 5 Attackers
-        ...Array.from({ length: 5 }, (_, i) => 
-          prisma.player.create({
-            data: {
-              teamId: team.id,
-              name: playerNames.attackers[i],
-              position: Position.ATTACKER,
-            },
-          })
-        ),
-      ]);
-
-      return { team, players };
     } catch (error) {
       console.error('Error creating team:', error);
       throw new Error('Failed to create team');
