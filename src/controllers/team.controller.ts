@@ -30,20 +30,4 @@ export class TeamController {
     };
     res.json(response);
   }
-
-  async getTeam(req: AuthRequest, res: Response): Promise<void> {
-    const userId = req.user!.userId;
-    const team = await this.teamService.getTeamByUserId(userId);
-    
-    if (!team) {
-      const errorResponse: ErrorResponse = {
-        success: false,
-        error: 'Team not found',
-      };
-      res.status(404).json(errorResponse);
-      return;
-    }
-
-    res.json(team);
-  }
 } 
